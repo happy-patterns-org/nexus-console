@@ -3,14 +3,21 @@
  * A sophisticated browser-based terminal with modular architecture
  */
 
-export { default as NexusConsole } from './core/NexusConsole';
-export { default as TerminalWebSocketManager } from './transport/TerminalWebSocket';
-export { default as TerminalRenderer } from './core/TerminalRenderer';
+// Core
 export { default as TerminalState } from './core/TerminalState';
-export { default as FileSystemProvider } from './filesystem/FileSystemProvider';
+
+// Security
 export { default as CommandSanitizer } from './security/CommandSanitizer';
+
+// Cache
 export { default as CacheManager } from './cache/CacheManager';
-export { default as TerminalUI } from './ui/TerminalUI';
+
+// TODO: Export these once migrated
+// export { default as NexusConsole } from './core/NexusConsole';
+// export { default as TerminalWebSocketManager } from './transport/TerminalWebSocket';
+// export { default as TerminalRenderer } from './core/TerminalRenderer';
+// export { default as FileSystemProvider } from './filesystem/FileSystemProvider';
+// export { default as TerminalUI } from './ui/TerminalUI';
 
 // Types
 export * from './types';
@@ -18,8 +25,8 @@ export * from './types';
 // Version
 export const VERSION = '1.0.0';
 
-// Factory function
-export function createTerminal(config?: any) {
-  const NexusConsole = require('./core/NexusConsole').default;
-  return new NexusConsole(config);
-}
+// Factory function - TODO: Enable once NexusConsole is migrated
+// export function createTerminal(config?: any) {
+//   const NexusConsole = require('./core/NexusConsole').default;
+//   return new NexusConsole(config);
+// }
