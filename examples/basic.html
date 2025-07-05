@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Console - Basic Example</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1a1a1a;
+            color: #e4e4e4;
+        }
+        
+        .header {
+            background: #0a0a0a;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 2px solid #00d4aa;
+        }
+        
+        .header h1 {
+            margin: 0;
+            color: #00d4aa;
+            font-size: 24px;
+        }
+        
+        .container {
+            height: calc(100vh - 80px);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        #terminal-container {
+            flex: 1;
+            position: relative;
+        }
+        
+        .controls {
+            padding: 20px;
+            background: #0a0a0a;
+            border-top: 1px solid #333;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        button {
+            background: #00d4aa;
+            color: #0a0a0a;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        button:hover {
+            background: #00b896;
+            transform: translateY(-1px);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .info {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 4px;
+            border: 1px solid #333;
+            font-size: 12px;
+            z-index: 1000;
+        }
+        
+        .metric {
+            margin: 5px 0;
+        }
+        
+        .metric-label {
+            color: #999;
+        }
+        
+        .metric-value {
+            color: #00d4aa;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Nexus Console - Basic Example</h1>
+    </div>
+    
+    <div class="container">
+        <div id="terminal-container"></div>
+    </div>
+    
+    <div class="controls">
+        <button onclick="createSession()">New Session</button>
+        <button onclick="clearTerminal()">Clear</button>
+        <button onclick="showMetrics()">Show Metrics</button>
+        <button onclick="toggleTheme()">Toggle Theme</button>
+    </div>
+    
+    <div class="info" id="info" style="display: none;">
+        <div class="metric">
+            <span class="metric-label">Status:</span>
+            <span class="metric-value" id="status">Disconnected</span>
+        </div>
+        <div class="metric">
+            <span class="metric-label">Session:</span>
+            <span class="metric-value" id="session">None</span>
+        </div>
+        <div class="metric">
+            <span class="metric-label">Commands:</span>
+            <span class="metric-value" id="commands">0</span>
+        </div>
+        <div class="metric">
+            <span class="metric-label">Latency:</span>
+            <span class="metric-value" id="latency">0ms</span>
+        </div>
+    </div>
+    
+    <script type="module">
+        // Import Nexus Console
+        // In production, this would be:
+        // import NexusConsole from 'nexus-console';
+        import NexusConsole from '../dist/nexus-console.es.js';
+        
+        let terminal = null;
+        let currentTheme = 'nexus-dark';
+        
+        // Initialize terminal
+        async function init() {
+            terminal = new NexusConsole({
+                container: document.getElementById('terminal-container'),
+                theme: currentTheme,
+                position: 'fullscreen',
+                fontSize: 14,
+                showToolbar: false,
+                showTabs: false,
+                showStatusBar: false
+            });
+            
+            // Set up event listeners
+            terminal.on('connected', () => {
+                updateStatus('Connected');
+                createSession();
+            });
+            
+            terminal.on('disconnected', () => {
+                updateStatus('Disconnected');
+                updateSession('None');
+            });
+            
+            terminal.on('session_created', ({ sessionId }) => {
+                updateSession(sessionId.substring(0, 8) + '...');
+            });
+            
+            terminal.on('command_executed', () => {
+                const metrics = terminal.getMetrics();
+                updateCommands(metrics.commandCount);
+                updateLatency(metrics.averageCommandLatency);
+            });
+            
+            // Initialize
+            await terminal.initialize();
+            
+            // Show info panel
+            document.getElementById('info').style.display = 'block';
+            
+            // Update metrics periodically
+            setInterval(updateMetrics, 1000);
+        }
+        
+        // Control functions
+        window.createSession = async function() {
+            try {
+                await terminal.createSession();
+            } catch (error) {
+                console.error('Failed to create session:', error);
+                alert('Failed to create session: ' + error.message);
+            }
+        };
+        
+        window.clearTerminal = function() {
+            if (terminal) {
+                terminal.clear();
+            }
+        };
+        
+        window.showMetrics = function() {
+            if (terminal) {
+                const metrics = terminal.getMetrics();
+                alert(`Terminal Metrics:
+- Initialized: ${metrics.initialized}
+- Sessions: ${metrics.sessions}
+- Commands: ${metrics.commandCount}
+- Avg Latency: ${metrics.averageCommandLatency}ms
+- Messages Sent: ${metrics.messagesSent}
+- Messages Received: ${metrics.messagesReceived}`);
+            }
+        };
+        
+        window.toggleTheme = function() {
+            if (terminal && terminal.renderer) {
+                currentTheme = currentTheme === 'nexus-dark' ? 'nexus-light' : 'nexus-dark';
+                terminal.renderer.setTheme(currentTheme);
+                
+                // Update page theme
+                if (currentTheme === 'nexus-light') {
+                    document.body.style.background = '#f5f5f5';
+                    document.body.style.color = '#1a1a1a';
+                } else {
+                    document.body.style.background = '#1a1a1a';
+                    document.body.style.color = '#e4e4e4';
+                }
+            }
+        };
+        
+        // Update functions
+        function updateStatus(status) {
+            document.getElementById('status').textContent = status;
+        }
+        
+        function updateSession(session) {
+            document.getElementById('session').textContent = session;
+        }
+        
+        function updateCommands(count) {
+            document.getElementById('commands').textContent = count;
+        }
+        
+        function updateLatency(latency) {
+            document.getElementById('latency').textContent = latency + 'ms';
+        }
+        
+        function updateMetrics() {
+            if (terminal) {
+                const metrics = terminal.getMetrics();
+                updateLatency(metrics.averageCommandLatency);
+            }
+        }
+        
+        // Initialize on load
+        init().catch(error => {
+            console.error('Failed to initialize terminal:', error);
+            alert('Failed to initialize terminal. Check console for details.');
+        });
+    </script>
+</body>
+</html>
