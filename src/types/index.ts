@@ -75,6 +75,12 @@ export interface SecurityRule {
   message?: string;
 }
 
+export interface CommandHistory {
+  command: string;
+  timestamp: number;
+  sessionId?: string;
+}
+
 export interface TerminalMetrics {
   initialized: boolean;
   initTime: number;
