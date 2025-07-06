@@ -45,13 +45,15 @@
   },
   "homepage": "https://github.com/happy-patterns-org/nexus-console#readme",
   "dependencies": {
-    "tslib": "^2.8.1",
-    "xterm": "^5.3.0",
-    "xterm-addon-fit": "^0.8.0",
-    "xterm-addon-search": "^0.13.0",
-    "xterm-addon-serialize": "^0.11.0",
-    "xterm-addon-unicode11": "^0.6.0",
-    "xterm-addon-webgl": "^0.16.0"
+    "@xterm/addon-clipboard": "^0.1.0",
+    "@xterm/addon-fit": "^0.10.0",
+    "@xterm/addon-search": "^0.15.0",
+    "@xterm/addon-serialize": "^0.13.0",
+    "@xterm/addon-unicode11": "^0.8.0",
+    "@xterm/addon-web-links": "^0.11.0",
+    "@xterm/addon-webgl": "^0.18.0",
+    "@xterm/xterm": "^5.5.0",
+    "tslib": "^2.8.1"
   },
   "devDependencies": {
     "@types/node": "^20.10.0",
@@ -59,6 +61,7 @@
     "@typescript-eslint/parser": "^6.13.0",
     "@vitest/coverage-v8": "^1.0.0",
     "@vitest/ui": "^1.0.0",
+    "@xterm/headless": "^5.5.0",
     "eslint": "^8.54.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-import": "^2.29.0",
