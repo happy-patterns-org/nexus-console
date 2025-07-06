@@ -6,6 +6,12 @@
 // Core
 export { default as TerminalState } from './core/TerminalState';
 
+// Transport
+export { default as TerminalWebSocketManager } from './transport/TerminalWebSocket';
+
+// File System
+export { default as FileSystemProvider } from './filesystem/FileSystemProvider';
+
 // Security
 export { default as CommandSanitizer } from './security/CommandSanitizer';
 
@@ -14,9 +20,7 @@ export { default as CacheManager } from './cache/CacheManager';
 
 // TODO: Export these once migrated
 // export { default as NexusConsole } from './core/NexusConsole';
-// export { default as TerminalWebSocketManager } from './transport/TerminalWebSocket';
 // export { default as TerminalRenderer } from './core/TerminalRenderer';
-// export { default as FileSystemProvider } from './filesystem/FileSystemProvider';
 // export { default as TerminalUI } from './ui/TerminalUI';
 
 // Types

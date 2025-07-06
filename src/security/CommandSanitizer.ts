@@ -329,9 +329,7 @@ class CommandSanitizer {
 
   private applyCustomRules(command: string): string {
     for (const rule of this.config.customRules) {
-      if (typeof rule === 'function') {
-        command = rule(command);
-      } else if (rule.pattern && rule.action) {
+      if (rule.pattern && rule.action) {
         if (rule.pattern.test(command)) {
           switch (rule.action) {
             case 'block':

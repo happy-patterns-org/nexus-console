@@ -65,7 +65,7 @@ class CacheManager {
   private stats: Omit<CacheStats, 'hitRate' | 'memoryCacheSize' | 'memoryCacheEntries' | 'memoryLimit'>;
   private compressionAvailable: boolean;
   private initialized: boolean;
-  private cleanupInterval?: NodeJS.Timer;
+  private cleanupInterval?: ReturnType<typeof setInterval>;
 
   constructor(config: CacheManagerConfig = {}) {
     this.config = {
@@ -804,7 +804,7 @@ class CacheManager {
   // Cleanup
   destroy(): void {
     if (this.cleanupInterval) {
-      clearInterval(this.cleanupInterval);
+      clearInterval(this.cleanupInterval as NodeJS.Timeout);
       this.cleanupInterval = undefined;
     }
 

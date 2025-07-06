@@ -42,7 +42,7 @@ class TerminalState {
   private state: TerminalStateData;
   private listeners: Map<string, Set<StateChangeCallback>>;
   private startTime: number;
-  private uptimeInterval?: NodeJS.Timer;
+  private uptimeInterval?: ReturnType<typeof setInterval>;
 
   constructor() {
     this.state = {
@@ -225,8 +225,8 @@ class TerminalState {
     return {
       ...this.state,
       sessions: Array.from(this.state.sessions.entries()).map(([id, session]) => ({
-        id,
         ...session,
+        id, // id comes last to override any id in session
       })),
     };
   }
@@ -312,8 +312,8 @@ class TerminalState {
       config: this.state.config,
       metrics: this.state.metrics,
       sessions: Array.from(this.state.sessions.entries()).map(([id, session]) => ({
-        id,
         ...session,
+        id, // id comes last to override any id in session
       })),
     });
   }
@@ -348,7 +348,7 @@ class TerminalState {
   // Cleanup
   destroy(): void {
     if (this.uptimeInterval) {
-      clearInterval(this.uptimeInterval);
+      clearInterval(this.uptimeInterval as NodeJS.Timeout);
       this.uptimeInterval = undefined;
     }
     this.listeners.clear();
