@@ -7,7 +7,7 @@ Migrating the terminal implementation from w-webconsole-work to the standalone n
 
 ### Phase 1: Frontend Migration (JavaScript → TypeScript)
 1. **Core Module**
-   - [ ] TerminalCore.js → TerminalCore.ts
+   - [x] TerminalCore.js → NexusConsole.ts ✅
    - [x] TerminalRenderer.js → TerminalRenderer.ts ✅
    - [x] TerminalState.js → TerminalState.ts ✅
 
@@ -24,10 +24,10 @@ Migrating the terminal implementation from w-webconsole-work to the standalone n
    - [x] CacheManager.js → CacheManager.ts ✅
 
 6. **UI Module**
-   - [ ] TerminalUI.js → TerminalUI.ts
+   - [x] TerminalUI.js → TerminalUI.ts ✅
 
 7. **Entry Point**
-   - [ ] index.js → index.ts (update existing)
+   - [x] index.js → index.ts (update existing) ✅
 
 ### Phase 2: Backend Migration
 1. **Terminal API**
