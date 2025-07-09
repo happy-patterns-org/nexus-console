@@ -36,3 +36,14 @@ export const VERSION = '1.0.0';
 export function createTerminal(config?: NexusConsoleConfig) {
   return new NexusConsole(config);
 }
+
+// React components
+export { NexusConsole as NexusConsoleComponent, useNexusConsoleAPI } from './react/NexusConsole';
+export { VirtualScroller } from './react/VirtualScroller';
+export type { 
+  NexusConsoleProps, 
+  NexusConsoleAPI, 
+  LogEntry, 
+  AgentStatus,
+  NexusConsoleTheme 
+} from './react/types';
