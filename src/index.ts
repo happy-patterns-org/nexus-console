@@ -10,6 +10,7 @@ import type { NexusConsoleConfig } from './types';
 export { default as TerminalState } from './core/TerminalState';
 export { default as TerminalRenderer } from './core/TerminalRenderer';
 export { NexusConsole };
+export { default as NexusConsoleHybrid } from './core/NexusConsoleHybrid';
 
 // UI
 export { default as TerminalUI } from './ui/TerminalUI';
@@ -25,6 +26,11 @@ export { default as CommandSanitizer } from './security/CommandSanitizer';
 
 // Cache
 export { default as CacheManager } from './cache/CacheManager';
+
+// Bridge
+export { getBridgeClient, destroyBridgeClient } from './bridge/BridgeClient';
+export { MetricsCollector } from './bridge/MetricsCollector';
+export type { BridgeConfig, TerminalEndpoint, SessionMetrics, BridgeStatus } from './bridge/BridgeClient';
 
 // Types
 export * from './types';

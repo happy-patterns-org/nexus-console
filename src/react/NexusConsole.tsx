@@ -4,9 +4,9 @@
  */
 
 import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
-import NexusConsoleCore from '../core/NexusConsole';
+import NexusConsoleHybrid from '../core/NexusConsoleHybrid';
 import type { NexusConsoleProps, NexusConsoleAPI, LogEntry, AgentStatus, NexusConsoleTheme } from './types';
-import type { NexusConsoleConfig } from '../types';
+import type { HybridConsoleConfig } from '../core/NexusConsoleHybrid';
 
 // Default themes
 const THEMES: Record<'light' | 'dark', NexusConsoleTheme> = {
@@ -70,10 +70,16 @@ export const NexusConsole: React.FC<NexusConsoleProps> = ({
   blockedCommands,
   authToken,
   apiEndpoint,
+  enableBridge = true,
+  bridgeUrl,
+  bridgeApiKey,
+  enableMetrics = true,
+  enableDiscovery = true,
   onCommand,
   onResize,
   onError,
   onReady,
+  onBridgeStatus,
   virtualScrolling = true,
   maxLogEntries = 10000,
   debounceDelay = 100,
@@ -83,10 +89,11 @@ export const NexusConsole: React.FC<NexusConsoleProps> = ({
   showWelcomeMessage = true
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const terminalRef = useRef<NexusConsoleCore | null>(null);
+  const terminalRef = useRef<NexusConsoleHybrid | null>(null);
   const resizeObserverRef = useRef<ResizeObserver | null>(null);
   const [isReady, setIsReady] = useState(false);
   const [currentHeight, setCurrentHeight] = useState(height);
+  const [bridgeStatus, setBridgeStatus] = useState<{ available: boolean; features?: string[] }>({ available: false });
   
   // Memoize theme
   const currentTheme = useMemo(() => {
@@ -98,7 +105,7 @@ export const NexusConsole: React.FC<NexusConsoleProps> = ({
   }, [theme]);
   
   // Memoize configuration
-  const config = useMemo<NexusConsoleConfig>(() => ({
+  const config = useMemo<HybridConsoleConfig>(() => ({
     container: null, // Will be set later
     serverUrl: apiEndpoint || window.location.origin,
     token: authToken,
@@ -117,8 +124,16 @@ export const NexusConsole: React.FC<NexusConsoleProps> = ({
       search: true,
       links: true,
       unicode: true
-    }
-  }), [apiEndpoint, authToken, currentTheme, fontSize, fontFamily, maxLogEntries, securityLevel, allowedCommands, blockedCommands]);
+    },
+    enableBridge,
+    bridge: enableBridge ? {
+      bridgeUrl,
+      apiKey: bridgeApiKey,
+      projectId,
+      enableMetrics,
+      enableDiscovery
+    } : undefined
+  }), [apiEndpoint, authToken, currentTheme, fontSize, fontFamily, maxLogEntries, securityLevel, allowedCommands, blockedCommands, enableBridge, bridgeUrl, bridgeApiKey, projectId, enableMetrics, enableDiscovery]);
   
   // API implementation
   const api = useRef<NexusConsoleAPI>({
@@ -200,7 +215,7 @@ export const NexusConsole: React.FC<NexusConsoleProps> = ({
     
     try {
       // Create terminal instance
-      const terminal = new NexusConsoleCore({
+      const terminal = new NexusConsoleHybrid({
         ...config,
         container: containerRef.current
       });
@@ -228,6 +243,24 @@ export const NexusConsole: React.FC<NexusConsoleProps> = ({
         
         if (autoConnect) {
           terminal.connect();
+        }
+        
+        // Monitor Bridge status
+        if (enableBridge) {
+          const checkBridgeStatus = () => {
+            const status = terminal.getBridgeStatus();
+            setBridgeStatus(status);
+            if (onBridgeStatus) {
+              onBridgeStatus(status);
+            }
+          };
+          
+          // Check immediately and periodically
+          checkBridgeStatus();
+          const bridgeInterval = setInterval(checkBridgeStatus, 5000);
+          
+          // Clean up on unmount
+          return () => clearInterval(bridgeInterval);
         }
         
         if (onReady) {

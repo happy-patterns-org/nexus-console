@@ -58,11 +58,19 @@ export interface NexusConsoleProps {
   authToken?: string;
   apiEndpoint?: string;
   
+  // Bridge integration
+  enableBridge?: boolean;
+  bridgeUrl?: string;
+  bridgeApiKey?: string;
+  enableMetrics?: boolean;
+  enableDiscovery?: boolean;
+  
   // Event handlers
   onCommand?: (command: string) => void;
   onResize?: (height: number) => void;
   onError?: (error: Error) => void;
   onReady?: () => void;
+  onBridgeStatus?: (status: { available: boolean; features?: string[] }) => void;
   
   // Performance options
   virtualScrolling?: boolean;
