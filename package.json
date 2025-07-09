@@ -49,6 +49,7 @@
   },
   "homepage": "https://github.com/happy-patterns-org/nexus-console#readme",
   "dependencies": {
+    "@happy-devkit/shared-config": "workspace:*",
     "@xterm/addon-clipboard": "^0.1.0",
     "@xterm/addon-fit": "^0.10.0",
     "@xterm/addon-search": "^0.15.0",

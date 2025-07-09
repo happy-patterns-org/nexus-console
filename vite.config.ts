@@ -1,7 +1,16 @@
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 import { resolve } from 'path';
 
-export default defineConfig({
+export default defineConfig(({ mode }) => {
+  // Load environment variables
+  const env = loadEnv(mode, process.cwd(), '');
+  
+  // Define proxy targets with environment variable support
+  const CONSOLE_WS_TARGET = env.VITE_CONSOLE_WS_TARGET || env.CONSOLE_WS_TARGET || 'ws://localhost:8000';
+  const CONSOLE_API_TARGET = env.VITE_CONSOLE_API_TARGET || env.CONSOLE_API_TARGET || 'http://localhost:8000';
+  const DEV_PORT = parseInt(env.VITE_DEV_PORT || env.DEV_PORT || '3000', 10);
+  
+  return {
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
@@ -37,16 +46,24 @@ export default defineConfig({
     }
   },
   server: {
-    port: 3000,
+    port: DEV_PORT,
     proxy: {
       '/terminal/ws': {
-        target: 'ws://localhost:8000',
+        target: CONSOLE_WS_TARGET,
         ws: true,
-        changeOrigin: true
+        changeOrigin: true,
+        rewrite: (path) => {
+          console.log(`[WebSocket Proxy] ${path} -> ${CONSOLE_WS_TARGET}${path}`);
+          return path;
+        }
       },
       '/api': {
-        target: 'http://localhost:8000',
-        changeOrigin: true
+        target: CONSOLE_API_TARGET,
+        changeOrigin: true,
+        rewrite: (path) => {
+          console.log(`[API Proxy] ${path} -> ${CONSOLE_API_TARGET}${path}`);
+          return path;
+        }
       }
     }
   },
@@ -55,4 +72,5 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: './src/test/setup.ts'
   }
+  };
 });

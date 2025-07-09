@@ -17,6 +17,8 @@ export { default as TerminalUI } from './ui/TerminalUI';
 
 // Transport
 export { default as TerminalWebSocketManager } from './transport/TerminalWebSocket';
+export { default as TerminalWebSocketEnhanced } from './transport/TerminalWebSocketEnhanced';
+export { default as TerminalWebSocketConfigured } from './transport/TerminalWebSocketConfigured';
 
 // File System
 export { default as FileSystemProvider } from './filesystem/FileSystemProvider';
@@ -45,6 +47,7 @@ export function createTerminal(config?: NexusConsoleConfig) {
 
 // React components
 export { NexusConsole as NexusConsoleComponent, useNexusConsoleAPI } from './react/NexusConsole';
+export { NexusConsoleConfigured } from './react/NexusConsoleConfigured';
 export { VirtualScroller } from './react/VirtualScroller';
 export type { 
   NexusConsoleProps, 
@@ -53,3 +56,4 @@ export type {
   AgentStatus,
   NexusConsoleTheme 
 } from './react/types';
+export type { NexusConsoleConfiguredProps } from './react/NexusConsoleConfigured';
