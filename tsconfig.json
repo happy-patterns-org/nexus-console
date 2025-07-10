@@ -33,11 +33,13 @@
       "@filesystem/*": ["./src/filesystem/*"],
       "@security/*": ["./src/security/*"],
       "@cache/*": ["./src/cache/*"],
-      "@ui/*": ["./src/ui/*"]
+      "@ui/*": ["./src/ui/*"],
+      "@happy-devkit/shared-config": ["../packages/shared-config/src/index"]
     }
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "src/types/**/*.d.ts"
   ],
   "exclude": [
     "node_modules",

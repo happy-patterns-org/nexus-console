@@ -2,6 +2,11 @@
 
 This document describes all environment variables supported by Nexus Console for configuration and deployment flexibility.
 
+## Recent Updates (January 2025)
+- Removed last hardcoded URL from BridgeClient.ts
+- Added BRIDGE_HOST and BRIDGE_PORT environment variables
+- Created test setup file with proper environment configuration
+
 ## Overview
 
 Nexus Console uses environment variables to configure various aspects of the application, allowing for easy deployment across different environments without code changes. All hardcoded URLs and ports have been replaced with configurable options.
@@ -29,7 +34,8 @@ Nexus Console uses environment variables to configure various aspects of the app
 
 | Variable | Description | Default | Example |
 |----------|-------------|---------|---------|
-| `BRIDGE_HOST` | Bridge service host URL | `http://localhost:3001` | `https://bridge.example.com` |
+| `BRIDGE_HOST` | Bridge service hostname | `localhost` | `bridge.example.com` |
+| `BRIDGE_PORT` | Bridge service port | `3001` | `3002` |
 | `BRIDGE_API_PATH` | Bridge API base path | `/api/bridge` | `/v1/bridge` |
 | `BRIDGE_API_KEY` | API key for Bridge authentication | None | `sk-1234567890` |
 

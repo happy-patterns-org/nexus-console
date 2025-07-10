@@ -83,8 +83,10 @@ class BridgeClient {
       // In browser, check current origin
       return `${window.location.origin}/api/bridge`;
     }
-    // Default fallback
-    return 'http://localhost:3001/api/bridge';
+    // Use environment variable or default configuration
+    const defaultPort = process.env.BRIDGE_PORT || '3001';
+    const defaultHost = process.env.BRIDGE_HOST || 'localhost';
+    return `http://${defaultHost}:${defaultPort}/api/bridge`;
   }
   
   /**
