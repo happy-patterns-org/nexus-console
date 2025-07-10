@@ -1,0 +1,57 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": ["./src/index.ts"],
+  "out": "./docs/api",
+  "name": "Nexus Console API",
+  "readme": "./README.md",
+  "theme": "default",
+  "includeVersion": true,
+  "excludePrivate": true,
+  "excludeProtected": false,
+  "excludeInternal": true,
+  "excludeExternals": false,
+  "hideGenerator": false,
+  "githubPages": true,
+  "gitRevision": "main",
+  "categorizeByGroup": true,
+  "defaultCategory": "Other",
+  "categoryOrder": [
+    "Core",
+    "Transport", 
+    "Security",
+    "FileSystem",
+    "UI",
+    "Bridge",
+    "Cache",
+    "Monitoring",
+    "React Components",
+    "Types",
+    "*"
+  ],
+  "plugin": ["typedoc-plugin-markdown"],
+  "navigationLinks": {
+    "GitHub": "https://github.com/business-org/nexus-console",
+    "Documentation": "https://docs.nexus-console.dev"
+  },
+  "sidebarLinks": {
+    "Getting Started": "../README.md",
+    "Integration Guide": "../HAPPY_DEVKIT_INTEGRATION.md",
+    "Security Guide": "../SECURITY_GUIDE.md",
+    "WebSocket Protocol": "../WEBSOCKET_PROTOCOL.md"
+  },
+  "exclude": [
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "**/node_modules/**",
+    "**/__tests__/**"
+  ],
+  "externalPattern": [
+    "**/node_modules/**"
+  ],
+  "skipErrorChecking": true,
+  "validation": {
+    "notExported": true,
+    "invalidLink": true,
+    "notDocumented": false
+  }
+}

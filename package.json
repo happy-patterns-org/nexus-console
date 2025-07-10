@@ -26,7 +26,9 @@
     "server:dev": "cd server && uv run uvicorn main:app --reload --port 3001",
     "server:prod": "cd server && uv run uvicorn main:app --host 0.0.0.0 --port 3001",
     "server:setup": "cd server && uv sync",
-    "docs": "typedoc --out docs/api src/index.ts",
+    "docs": "typedoc",
+    "docs:watch": "typedoc --watch",
+    "docs:serve": "npx http-server docs/api -p 8080",
     "prepare": "husky install"
   },
   "keywords": [
