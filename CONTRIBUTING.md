@@ -19,9 +19,14 @@ By participating in this project, you agree to abide by our Code of Conduct: be 
    # Frontend dependencies
    npm install
    
-   # Backend dependencies
+   # Backend dependencies (using UV)
    cd server
-   pip install -r requirements.txt
+   uv sync
+   ```
+   
+   **Note**: We use [UV](https://github.com/astral-sh/uv) for Python dependency management. Install it with:
+   ```bash
+   curl -LsSf https://astral.sh/uv/install.sh | sh
    ```
 
 3. **Run Development Environment**
@@ -47,9 +52,16 @@ By participating in this project, you agree to abide by our Code of Conduct: be 
 
 3. **Run Tests**
    ```bash
+   # Frontend tests
    npm run test
    npm run typecheck
    npm run lint
+   
+   # Backend tests (if Python code exists)
+   cd server
+   uv run pytest
+   uv run mypy .
+   uv run ruff check .
    ```
 
 4. **Commit Changes**
@@ -77,6 +89,9 @@ By participating in this project, you agree to abide by our Code of Conduct: be 
 - Prefer composition over inheritance
 - Keep functions small and focused
 - Document complex logic
+- Maximum line length: 100 characters (enforced by ESLint)
+- Use explicit function return types
+- Follow security best practices (no hardcoded secrets, validate inputs)
 
 ### Testing
 - Write unit tests for utilities

@@ -1,0 +1,18 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Run linting
+echo "🔍 Running ESLint..."
+npm run lint
+
+# Run type checking
+echo "📝 Running TypeScript type check..."
+npm run typecheck
+
+# Run security audit
+echo "🔒 Running security audit..."
+npm audit --production --audit-level=high
+
+# Run tests (fast subset for pre-commit)
+echo "🧪 Running tests..."
+npm run test -- --run --reporter=dot
