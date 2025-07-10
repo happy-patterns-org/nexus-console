@@ -8,7 +8,8 @@ import {
   getBridgeHost,
   API_PATHS,
   type ServiceConfig 
-} from '@happy-devkit/shared-config';
+} from '@business-org/shared-config-ts';
+
 import type { SessionMetrics, BridgeStatus, TerminalEndpoint } from './BridgeClient';
 
 export interface BridgeConfig {

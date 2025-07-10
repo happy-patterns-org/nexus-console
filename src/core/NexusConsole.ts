@@ -3,13 +3,10 @@
  * Coordinates all terminal subsystems and provides the public API
  */
 
-import TerminalWebSocketManager from '../transport/TerminalWebSocket';
-import TerminalRenderer from './TerminalRenderer';
-import TerminalState from './TerminalState';
+import CacheManager from '../cache/CacheManager';
 import FileSystemProvider from '../filesystem/FileSystemProvider';
 import CommandSanitizer from '../security/CommandSanitizer';
-import CacheManager from '../cache/CacheManager';
-import TerminalUI from '../ui/TerminalUI';
+import TerminalWebSocketManager from '../transport/TerminalWebSocket';
 import type { 
   NexusConsoleConfig, 
   TerminalSession, 
@@ -18,6 +15,11 @@ import type {
   CommandHistory,
   TerminalMetrics
 } from '../types';
+import TerminalUI from '../ui/TerminalUI';
+
+import TerminalRenderer from './TerminalRenderer';
+import TerminalState from './TerminalState';
+
 
 export interface NexusSession extends TerminalSession {
   buffer: Uint8Array[];

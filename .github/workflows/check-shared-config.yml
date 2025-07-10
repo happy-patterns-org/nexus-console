@@ -1,0 +1,124 @@
+name: Check Shared Config Compatibility
+
+on:
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 */6 * * *'  # Every 6 hours
+  workflow_dispatch:  # Allow manual triggers
+
+jobs:
+  check-breaking-changes:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout nexus-console
+        uses: actions/checkout@v4
+        with:
+          path: nexus-console
+      
+      - name: Checkout shared-config
+        uses: actions/checkout@v4
+        with:
+          repository: business-org/shared-config
+          path: shared-config
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: nexus-console/package-lock.json
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Check for shared-config updates
+        working-directory: shared-config
+        run: |
+          git fetch origin
+          
+          # Check if there are any changes
+          if git diff HEAD origin/main --quiet; then
+            echo "No changes in shared-config"
+          else
+            echo "Changes detected in shared-config:"
+            git diff HEAD origin/main --name-only
+          fi
+      
+      - name: Run breaking change detection
+        working-directory: shared-config
+        run: |
+          if [ -f "scripts/breaking-change-detect.py" ]; then
+            python scripts/breaking-change-detect.py || true
+          else
+            echo "No breaking change detection script found"
+          fi
+      
+      - name: Install nexus-console dependencies
+        working-directory: nexus-console
+        run: |
+          # Link local shared-config
+          cd ../shared-config/packages/shared-config-ts
+          npm link
+          cd ../../../nexus-console
+          npm link @business-org/shared-config-ts
+          
+          # Install other dependencies
+          npm ci
+      
+      - name: Run tests with latest shared-config
+        working-directory: nexus-console
+        run: |
+          # Run type checking
+          npm run typecheck
+          
+          # Run tests
+          npm test -- --run
+      
+      - name: Check for TypeScript errors
+        working-directory: nexus-console
+        run: |
+          # Additional TypeScript check specifically for shared-config imports
+          npx tsc --noEmit --skipLibCheck
+      
+      - name: Report status
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue_number = context.issue.number;
+            if (issue_number) {
+              github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue_number,
+                body: '⚠️ **Shared Config Compatibility Check Failed**\n\nThe latest changes in shared-config may not be compatible with this PR. Please check the workflow logs for details.'
+              });
+            }
+      
+      - name: Create compatibility report
+        if: always()
+        run: |
+          echo "## Shared Config Compatibility Report" > compatibility-report.md
+          echo "Date: $(date)" >> compatibility-report.md
+          echo "" >> compatibility-report.md
+          
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "✅ **Status: Compatible**" >> compatibility-report.md
+          else
+            echo "❌ **Status: Incompatible**" >> compatibility-report.md
+            echo "" >> compatibility-report.md
+            echo "Please review the changes in shared-config and update this repository accordingly." >> compatibility-report.md
+          fi
+          
+          cat compatibility-report.md
+      
+      - name: Upload compatibility report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: compatibility-report
+          path: compatibility-report.md

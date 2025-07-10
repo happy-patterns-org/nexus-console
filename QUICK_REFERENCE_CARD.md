@@ -12,8 +12,8 @@
 
 ```bash
 # One-time setup
-cd ../happy-devkit/packages/shared-config && npm link
-cd - && npm link @happy-devkit/shared-config
+cd ../shared-config/packages/shared-config-ts && npm link
+cd - && npm link @business-org/shared-config-ts
 ```
 
 ## 🔧 Most Common Replacements
@@ -24,7 +24,7 @@ cd - && npm link @happy-devkit/shared-config
 import { getBridgeHost } from './somewhere';
 
 // ✅ NEW
-import { getBridgeAPIUrl } from '@happy-devkit/shared-config';
+import { getBridgeApiUrl } from '@business-org/shared-config-ts';
 ```
 
 ### Bridge URLs
@@ -33,7 +33,7 @@ import { getBridgeAPIUrl } from '@happy-devkit/shared-config';
 'http://localhost:3001/api/bridge'
 
 // ✅ NEW
-getBridgeAPIUrl('/health')  // Returns: http://localhost:8080/api/health
+getBridgeApiUrl('/health')  // Returns: http://localhost:8080/api/health
 ```
 
 ### Console WebSocket
@@ -42,7 +42,7 @@ getBridgeAPIUrl('/health')  // Returns: http://localhost:8080/api/health
 'ws://localhost:8000/terminal/ws'
 
 // ✅ NEW
-getConsolePTYUrl(sessionId)  // Returns: ws://localhost:3001/ws/pty/{sessionId}
+getConsoleWSUrl(`/pty/${sessionId}`)  // Returns: ws://localhost:3001/ws/pty/{sessionId}
 ```
 
 ### Types
@@ -52,7 +52,7 @@ interface PTYMessage { ... }
 interface TerminalSession { ... }
 
 // ✅ NEW - Import them
-import type { PTYMessage, TerminalSession } from '@happy-devkit/shared-config';
+import type { PTYMessage, TerminalSession } from '@business-org/shared-config-ts';
 ```
 
 ## 🌍 Environment Variables
@@ -80,7 +80,7 @@ grep -r "8000" src/  # Should return nothing
 grep -r "3001.*bridge" src/  # Should return nothing
 
 # Is shared config linked?
-npm ls @happy-devkit/shared-config  # Should show link
+npm ls @business-org/shared-config-ts  # Should show link
 
 # Do imports resolve?
 npm run typecheck  # Should pass

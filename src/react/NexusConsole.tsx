@@ -4,9 +4,11 @@
  */
 
 import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
+
 import NexusConsoleHybrid from '../core/NexusConsoleHybrid';
-import type { NexusConsoleProps, NexusConsoleAPI, LogEntry, AgentStatus, NexusConsoleTheme } from './types';
 import type { HybridConsoleConfig } from '../core/NexusConsoleHybrid';
+
+import type { NexusConsoleProps, NexusConsoleAPI, LogEntry, AgentStatus, NexusConsoleTheme } from './types';
 
 // Default themes
 const THEMES: Record<'light' | 'dark', NexusConsoleTheme> = {

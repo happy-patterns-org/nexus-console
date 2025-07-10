@@ -1,6 +1,6 @@
 # Migrating to Shared Configuration
 
-This guide helps you migrate from hardcoded URLs and ports to the new shared configuration system using `@happy-devkit/shared-config`.
+This guide helps you migrate from hardcoded URLs and ports to the new shared configuration system using `@business-org/shared-config-ts`.
 
 ## Overview
 
@@ -15,13 +15,13 @@ The shared configuration system provides:
 ### 1. Install the Shared Configuration Package
 
 ```bash
-npm install @happy-devkit/shared-config
+npm install @business-org/shared-config-ts
 ```
 
 Or if using workspace:
 ```json
 "dependencies": {
-  "@happy-devkit/shared-config": "workspace:*"
+  "@business-org/shared-config-ts": "workspace:*"
 }
 ```
 
@@ -42,7 +42,7 @@ import {
   getBridgeApiUrl, 
   getConsoleWSUrl, 
   API_PATHS 
-} from '@happy-devkit/shared-config';
+} from '@business-org/shared-config-ts';
 
 const bridgeUrl = getBridgeApiUrl();
 const wsUrl = getConsoleWSUrl();
@@ -64,7 +64,7 @@ const healthEndpoint = API_PATHS.health;
 
 #### After:
 ```tsx
-import { NexusConsoleConfigured } from '@happy-devkit/nexus-console';
+import { NexusConsoleConfigured } from '@business-org/nexus-console';
 
 <NexusConsoleConfigured
   projectId="my-project"
@@ -82,7 +82,7 @@ const ws = new WebSocket('ws://localhost:3001/terminal/ws');
 
 #### After:
 ```typescript
-import { TerminalWebSocketConfigured } from '@happy-devkit/nexus-console';
+import { TerminalWebSocketConfigured } from '@business-org/nexus-console';
 
 const ws = new TerminalWebSocketConfigured({
   projectId: 'my-project',
@@ -101,7 +101,7 @@ const bridge = new BridgeClient({
 
 #### After:
 ```typescript
-import { getBridgeClient } from '@happy-devkit/nexus-console';
+import { getBridgeClient } from '@business-org/nexus-console';
 
 const bridge = getBridgeClient({
   // URL is automatically configured
@@ -122,7 +122,7 @@ fetch('/api/bridge/health');
 ### After:
 ```typescript
 // ✅ Type-safe paths
-import { API_PATHS, getBridgeApiUrl, getConsoleApiUrl } from '@happy-devkit/shared-config';
+import { API_PATHS, getBridgeApiUrl, getConsoleApiUrl } from '@business-org/shared-config-ts';
 
 fetch(getConsoleApiUrl(API_PATHS.projects));
 fetch(getConsoleApiUrl(API_PATHS.terminal.auth));
@@ -169,7 +169,7 @@ import type {
   PTYMessage,
   AgentCommand,
   TerminalSession 
-} from '@happy-devkit/shared-config';
+} from '@business-org/shared-config-ts';
 
 // Use types for better type safety
 const message: ConsoleMessage = {
@@ -234,7 +234,7 @@ services:
 import { jest } from '@jest/globals';
 
 // Mock the shared config
-jest.mock('@happy-devkit/shared-config', () => ({
+jest.mock('@business-org/shared-config-ts', () => ({
   getConsoleHost: () => 'http://test-console',
   getBridgeHost: () => 'http://test-bridge',
   API_PATHS: {
@@ -261,7 +261,7 @@ console.log('Bridge Host:', process.env.BRIDGE_HOST);
 {
   "compilerOptions": {
     "paths": {
-      "@happy-devkit/shared-config": ["../packages/shared-config/src"]
+      "@business-org/shared-config-ts": ["../packages/shared-config/src"]
     }
   }
 }

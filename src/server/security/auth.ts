@@ -3,9 +3,10 @@
  * Compatible with Happy Observatory authentication
  */
 
+import crypto from 'crypto';
+
 import type { Request, Response, NextFunction } from 'express';
 import { SignJWT, jwtVerify, JWTPayload } from 'jose';
-import crypto from 'crypto';
 
 // Extended Request type with auth
 export interface AuthRequest extends Request {
@@ -157,7 +158,7 @@ export function authenticate(config: JWTConfig) {
         userId: payload.userId,
         permissions: payload.permissions || [],
         projectIds: payload.projectIds || [],
-        jti: payload.jti!
+        jti: payload.jti
       };
       
       next();

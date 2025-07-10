@@ -3,8 +3,9 @@
  * Implements security features compatible with Happy Observatory
  */
 
-import type { Request, Response, NextFunction } from 'express';
 import crypto from 'crypto';
+
+import type { Request, Response, NextFunction } from 'express';
 
 // Types
 export interface SecurityConfig {

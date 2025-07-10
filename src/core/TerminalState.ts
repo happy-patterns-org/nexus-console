@@ -348,7 +348,7 @@ class TerminalState {
   // Cleanup
   destroy(): void {
     if (this.uptimeInterval) {
-      clearInterval(this.uptimeInterval as NodeJS.Timeout);
+      clearInterval(this.uptimeInterval);
       this.uptimeInterval = undefined;
     }
     this.listeners.clear();

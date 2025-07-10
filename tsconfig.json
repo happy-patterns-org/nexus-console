@@ -34,7 +34,8 @@
       "@security/*": ["./src/security/*"],
       "@cache/*": ["./src/cache/*"],
       "@ui/*": ["./src/ui/*"],
-      "@happy-devkit/shared-config": ["../packages/shared-config/src/index"]
+      "@business-org/shared-config-ts": ["../shared-config/packages/shared-config-ts/src/index"],
+      "@business-org/shared-config-ts/*": ["../shared-config/packages/shared-config-ts/src/*"]
     }
   },
   "include": [
@@ -45,8 +46,6 @@
     "node_modules",
     "dist",
     "build",
-    "coverage",
-    "**/*.test.ts",
-    "**/*.spec.ts"
+    "coverage"
   ]
 }

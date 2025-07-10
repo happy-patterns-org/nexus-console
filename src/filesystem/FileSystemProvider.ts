@@ -3,9 +3,9 @@
  * Provides seamless file operations across different environments
  */
 
-import type { FileEntry, FileSystemAccessOptions } from '../types';
-import type TerminalWebSocketManager from '../transport/TerminalWebSocket';
 import type CacheManager from '../cache/CacheManager';
+import type TerminalWebSocketManager from '../transport/TerminalWebSocket';
+import type { FileEntry, FileSystemAccessOptions } from '../types';
 
 export interface FileSystemProviderConfig {
   preferNative?: boolean;
@@ -371,7 +371,7 @@ class FileSystemProvider {
         data = content;
       } else {
         // Text content
-        data = new TextEncoder().encode(content as string);
+        data = new TextEncoder().encode(content);
       }
 
       // Write data

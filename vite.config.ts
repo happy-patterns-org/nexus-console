@@ -19,15 +19,34 @@ export default defineConfig(({ mode }) => {
       fileName: (format) => `nexus-console.${format}.js`
     },
     rollupOptions: {
-      external: ['xterm', 'xterm-addon-fit', 'xterm-addon-webgl', 'xterm-addon-search', 'xterm-addon-serialize', 'xterm-addon-unicode11'],
+      external: [
+        'react',
+        'react-dom',
+        'react/jsx-runtime',
+        'fs',
+        'path',
+        'xterm',
+        'xterm-addon-fit',
+        'xterm-addon-webgl',
+        'xterm-addon-search',
+        'xterm-addon-serialize',
+        'xterm-addon-unicode11',
+        '@business-org/shared-config-ts',
+        '@business-org/shared-config-ts/console-types'
+      ],
       output: {
         globals: {
+          'react': 'React',
+          'react-dom': 'ReactDOM',
+          'react/jsx-runtime': 'React',
           'xterm': 'Terminal',
           'xterm-addon-fit': 'FitAddon',
           'xterm-addon-webgl': 'WebglAddon',
           'xterm-addon-search': 'SearchAddon',
           'xterm-addon-serialize': 'SerializeAddon',
-          'xterm-addon-unicode11': 'Unicode11Addon'
+          'xterm-addon-unicode11': 'Unicode11Addon',
+          '@business-org/shared-config-ts': 'SharedConfig',
+          '@business-org/shared-config-ts/console-types': 'SharedConfigConsole'
         }
       }
     },

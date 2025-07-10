@@ -3,14 +3,14 @@
  * Handles all terminal rendering and interaction
  */
 
-import type { Terminal, ITerminalOptions, ITheme } from '@xterm/xterm';
+import type { ClipboardAddon } from '@xterm/addon-clipboard';
 import type { FitAddon } from '@xterm/addon-fit';
-import type { WebglAddon } from '@xterm/addon-webgl';
 import type { SearchAddon, ISearchOptions } from '@xterm/addon-search';
 import type { SerializeAddon } from '@xterm/addon-serialize';
 import type { Unicode11Addon } from '@xterm/addon-unicode11';
-import type { ClipboardAddon } from '@xterm/addon-clipboard';
 import type { WebLinksAddon } from '@xterm/addon-web-links';
+import type { WebglAddon } from '@xterm/addon-webgl';
+import type { Terminal, ITerminalOptions, ITheme } from '@xterm/xterm';
 
 export interface TerminalRendererConfig {
   container: HTMLElement | string;

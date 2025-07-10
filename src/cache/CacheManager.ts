@@ -804,7 +804,7 @@ class CacheManager {
   // Cleanup
   destroy(): void {
     if (this.cleanupInterval) {
-      clearInterval(this.cleanupInterval as NodeJS.Timeout);
+      clearInterval(this.cleanupInterval);
       this.cleanupInterval = undefined;
     }
 

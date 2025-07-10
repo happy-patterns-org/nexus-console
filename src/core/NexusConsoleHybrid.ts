@@ -3,10 +3,11 @@
  * Maintains direct WebSocket for PTY while adding Bridge capabilities
  */
 
-import NexusConsole from './NexusConsole';
 import { getBridgeClient, type BridgeConfig } from '../bridge/BridgeClientEnhanced';
 import { MetricsCollector } from '../bridge/MetricsCollector';
 import type { NexusConsoleConfig } from '../types';
+
+import NexusConsole from './NexusConsole';
 
 export interface HybridConsoleConfig extends NexusConsoleConfig {
   bridge?: BridgeConfig;

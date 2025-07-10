@@ -545,14 +545,14 @@ class CommandSanitizer {
     if (!this.config.allowedCommands || Array.isArray(this.config.allowedCommands)) {
       this.config.allowedCommands = new Set();
     }
-    (this.config.allowedCommands as Set<string>).add(command);
+    (this.config.allowedCommands).add(command);
   }
 
   addBlockedCommand(command: string): void {
     if (!this.config.blockedCommands || Array.isArray(this.config.blockedCommands)) {
       this.config.blockedCommands = new Set();
     }
-    (this.config.blockedCommands as Set<string>).add(command);
+    (this.config.blockedCommands).add(command);
   }
 
   addCustomRule(rule: SecurityRule): void {

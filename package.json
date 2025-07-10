@@ -23,8 +23,9 @@
     "lint": "eslint src --ext ts,tsx,js,jsx",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,md}\"",
     "typecheck": "tsc --noEmit",
-    "server:dev": "cd server && python -m uvicorn main:app --reload --port 3001",
-    "server:prod": "cd server && python -m uvicorn main:app --host 0.0.0.0 --port 3001",
+    "server:dev": "cd server && uv run uvicorn main:app --reload --port 3001",
+    "server:prod": "cd server && uv run uvicorn main:app --host 0.0.0.0 --port 3001",
+    "server:setup": "cd server && uv sync",
     "docs": "typedoc --out docs/api src/index.ts",
     "prepare": "husky install"
   },
@@ -49,7 +50,7 @@
   },
   "homepage": "https://github.com/happy-patterns-org/nexus-console#readme",
   "dependencies": {
-    "@happy-devkit/shared-config": "workspace:*",
+    "@business-org/shared-config-ts": "^1.0.0",
     "@xterm/addon-clipboard": "^0.1.0",
     "@xterm/addon-fit": "^0.10.0",
     "@xterm/addon-search": "^0.15.0",

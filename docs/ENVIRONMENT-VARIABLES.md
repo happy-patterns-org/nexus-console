@@ -148,10 +148,10 @@ data:
 
 ## Using Shared Configuration
 
-When using the `@happy-devkit/shared-config` package, many of these environment variables are automatically handled:
+When using the `@business-org/shared-config-ts` package, many of these environment variables are automatically handled:
 
 ```typescript
-import { getConsoleHost, getBridgeHost } from '@happy-devkit/shared-config';
+import { getConsoleHost, getBridgeHost } from '@business-org/shared-config-ts';
 
 // These functions automatically use the appropriate environment variables
 const consoleUrl = getConsoleHost(); // Uses CONSOLE_HOST

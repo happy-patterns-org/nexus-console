@@ -25,7 +25,7 @@ This checklist must be completed IN ORDER before any testing can begin.
 
 - [ ] Navigate to shared config and build:
   ```bash
-  cd ../happy-devkit/packages/shared-config
+  cd ../shared-config/packages/shared-config-ts
   npm install
   npm run build
   npm link
@@ -33,11 +33,11 @@ This checklist must be completed IN ORDER before any testing can begin.
 - [ ] Link in nexus-console:
   ```bash
   cd ../../../nexus-console
-  npm link @happy-devkit/shared-config
+  npm link @business-org/shared-config-ts
   ```
 - [ ] Verify link worked:
   ```bash
-  npm ls @happy-devkit/shared-config
+  npm ls @business-org/shared-config-ts
   ```
 
 ## Phase 3: Consolidate Implementations
@@ -85,8 +85,8 @@ This checklist must be completed IN ORDER before any testing can begin.
   const bridgeUrl = 'http://localhost:3001/api/bridge';
   
   // NEW
-  import { getBridgeAPIUrl } from '@happy-devkit/shared-config';
-  const bridgeUrl = getBridgeAPIUrl('/health');
+  import { getBridgeApiUrl } from '@business-org/shared-config-ts';
+  const bridgeUrl = getBridgeApiUrl('/health');
   ```
 
 - [ ] Use shared config types:
@@ -95,7 +95,7 @@ This checklist must be completed IN ORDER before any testing can begin.
     PTYMessage, 
     TerminalSession,
     AgentCommand 
-  } from '@happy-devkit/shared-config';
+  } from '@business-org/shared-config-ts';
   ```
 
 ## Phase 7: Test Configuration
@@ -136,15 +136,15 @@ All of these must be TRUE before proceeding:
 - ✅ Console runs on port 3001
 - ✅ Bridge connections use port 8080
 - ✅ No duplicate implementations exist
-- ✅ All imports from @happy-devkit/shared-config resolve
+- ✅ All imports from @business-org/shared-config-ts resolve
 - ✅ No hardcoded URLs remain in source code
 - ✅ Environment variables match configuration standard
 - ✅ All tests pass
 
 ## Common Issues and Solutions
 
-### Issue: "Cannot find module '@happy-devkit/shared-config'"
-**Solution**: Ensure you've run `npm link @happy-devkit/shared-config`
+### Issue: "Cannot find module '@business-org/shared-config-ts'"
+**Solution**: Ensure you've run `npm link @business-org/shared-config-ts`
 
 ### Issue: "Connection refused on port 3001"
 **Solution**: Update all server start scripts to use port 3001

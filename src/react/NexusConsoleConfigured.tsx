@@ -1,19 +1,23 @@
 /**
  * Nexus Console React Component with Shared Configuration
- * Uses type-safe configuration from @happy-devkit/shared-config
+ * Uses type-safe configuration from @business-org/shared-config-ts
  */
 
-import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { 
   getConsoleHost,
   getBridgeHost,
-  CONSOLE_CONFIG,
-  type ConsoleTheme 
-} from '@happy-devkit/shared-config';
-import NexusConsoleHybrid from '../core/NexusConsoleHybrid';
+  CONSOLE_CONFIG
+} from '@business-org/shared-config-ts';
+import {
+  ConsoleTheme
+} from '@business-org/shared-config-ts/console-types';
+import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
+
 import { getBridgeClient } from '../bridge/BridgeClientEnhanced';
-import type { NexusConsoleProps, NexusConsoleAPI, LogEntry, AgentStatus } from './types';
+import NexusConsoleHybrid from '../core/NexusConsoleHybrid';
 import type { HybridConsoleConfig } from '../core/NexusConsoleHybrid';
+
+import type { NexusConsoleProps, NexusConsoleAPI, LogEntry, AgentStatus } from './types';
 
 // Map shared config themes to component themes
 const THEME_MAP: Record<ConsoleTheme['name'], NexusConsoleProps['theme']> = {

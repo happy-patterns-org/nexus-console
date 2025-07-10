@@ -1,15 +1,18 @@
 /**
  * Terminal WebSocket Manager with Shared Configuration
- * Uses type-safe configuration from @happy-devkit/shared-config
+ * Uses type-safe configuration from @business-org/shared-config-ts
  */
 
 import { 
   getConsoleWSUrl, 
   API_PATHS,
-  CONSOLE_CONFIG,
-  type ConsoleMessage,
-  type PTYMessage 
-} from '@happy-devkit/shared-config';
+  CONSOLE_CONFIG
+} from '@business-org/shared-config-ts';
+import {
+  ConsoleMessage,
+  PTYMessage
+} from '@business-org/shared-config-ts/console-types';
+
 import TerminalWebSocketEnhanced from './TerminalWebSocketEnhanced';
 import type { EnhancedWebSocketConfig } from './TerminalWebSocketEnhanced';
 
@@ -129,7 +132,7 @@ export class TerminalWebSocketConfigured extends TerminalWebSocketEnhanced {
    */
   protected handleMessage(event: MessageEvent): void {
     try {
-      const message = JSON.parse(event.data) as ConsoleMessage | PTYMessage;
+      const message = JSON.parse(event.data);
       
       // Handle based on message type
       switch (message.type) {
