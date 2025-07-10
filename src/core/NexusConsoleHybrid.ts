@@ -4,7 +4,7 @@
  */
 
 import NexusConsole from './NexusConsole';
-import { getBridgeClient, type BridgeConfig } from '../bridge/BridgeClient';
+import { getBridgeClient, type BridgeConfig } from '../bridge/BridgeClientEnhanced';
 import { MetricsCollector } from '../bridge/MetricsCollector';
 import type { NexusConsoleConfig } from '../types';
 

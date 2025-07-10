@@ -30,7 +30,7 @@ class AdvancedTerminalExample {
       cursorStyle: 'block',
       cursorBlink: true,
       scrollback: 10000,
-      wsUrl: process.env.TERMINAL_WS_URL || 'ws://localhost:8080/terminal/ws',
+      wsUrl: process.env.TERMINAL_WS_URL || 'ws://localhost:3001/terminal/ws',
       enableFileSystem: true,
       enableCache: true,
       securityLevel: 'strict',

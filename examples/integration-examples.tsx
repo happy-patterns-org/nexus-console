@@ -59,7 +59,7 @@ export function FullFeaturedConsole({
         
         // Bridge Configuration
         enableBridge={true}
-        bridgeUrl={process.env.REACT_APP_BRIDGE_URL}
+        bridgeUrl={process.env.BRIDGE_HOST ? `http://${process.env.BRIDGE_HOST}:${process.env.BRIDGE_PORT || '8080'}` : undefined}
         bridgeApiKey={process.env.REACT_APP_BRIDGE_API_KEY}
         enableMetrics={true}
         enableDiscovery={true}

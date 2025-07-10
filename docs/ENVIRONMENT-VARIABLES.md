@@ -18,8 +18,8 @@ Nexus Console uses environment variables to configure various aspects of the app
 | Variable | Description | Default | Example |
 |----------|-------------|---------|---------|
 | `VITE_DEV_PORT` or `DEV_PORT` | Development server port | `3000` | `3001` |
-| `VITE_CONSOLE_WS_TARGET` or `CONSOLE_WS_TARGET` | WebSocket proxy target for development | `ws://localhost:8000` | `ws://terminal.local:8080` |
-| `VITE_CONSOLE_API_TARGET` or `CONSOLE_API_TARGET` | API proxy target for development | `http://localhost:8000` | `http://api.local:8080` |
+| `VITE_CONSOLE_WS_TARGET` or `CONSOLE_WS_TARGET` | WebSocket proxy target for development | `ws://localhost:3001` | `ws://terminal.local:8080` |
+| `VITE_CONSOLE_API_TARGET` or `CONSOLE_API_TARGET` | API proxy target for development | `http://localhost:3001` | `http://api.local:8080` |
 
 ### Console Service Configuration
 
@@ -82,12 +82,12 @@ Nexus Console uses environment variables to configure various aspects of the app
 ```bash
 # Development server
 VITE_DEV_PORT=3000
-VITE_CONSOLE_WS_TARGET=ws://localhost:8000
-VITE_CONSOLE_API_TARGET=http://localhost:8000
+VITE_CONSOLE_WS_TARGET=ws://localhost:3001
+VITE_CONSOLE_API_TARGET=http://localhost:3001
 
 # Services
 CONSOLE_HOST=http://localhost:3000
-BRIDGE_HOST=http://localhost:3001
+BRIDGE_HOST=http://localhost:8080
 
 # Features
 ENABLE_BRIDGE_INTEGRATION=true
@@ -190,8 +190,8 @@ const bridgeUrl = getBridgeHost();   // Uses BRIDGE_HOST
 
 If migrating from older versions with hardcoded values:
 
-1. Replace `http://localhost:3001/api/bridge` → Use `BRIDGE_HOST`
-2. Replace `ws://localhost:8000` → Use `CONSOLE_WS_TARGET`
+1. Replace `http://localhost:8080/api/bridge` → Use `BRIDGE_HOST`
+2. Replace `ws://localhost:3001` → Use `CONSOLE_WS_TARGET`
 3. Replace port `8000` in scripts → Use `TERMINAL_SERVER_PORT`
 4. Replace `0.0.0.0` bind address → Use `TERMINAL_BIND_ADDRESS`
 

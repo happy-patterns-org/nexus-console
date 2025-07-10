@@ -30,8 +30,8 @@ Or if using workspace:
 #### Before (Hardcoded):
 ```typescript
 // ❌ Hardcoded URLs
-const bridgeUrl = 'http://localhost:3001/api/bridge';
-const wsUrl = 'ws://localhost:8000/terminal/ws';
+const bridgeUrl = 'http://localhost:8080/api/bridge';
+const wsUrl = 'ws://localhost:3001/terminal/ws';
 const healthEndpoint = '/api/health';
 ```
 
@@ -57,8 +57,8 @@ const healthEndpoint = API_PATHS.health;
 ```tsx
 <NexusConsoleComponent
   projectId="my-project"
-  apiEndpoint="http://localhost:8000"
-  bridgeUrl="http://localhost:3001/api/bridge"
+  apiEndpoint="http://localhost:3001"
+  bridgeUrl="http://localhost:8080/api/bridge"
 />
 ```
 
@@ -77,7 +77,7 @@ import { NexusConsoleConfigured } from '@happy-devkit/nexus-console';
 
 #### Before:
 ```typescript
-const ws = new WebSocket('ws://localhost:8000/terminal/ws');
+const ws = new WebSocket('ws://localhost:3001/terminal/ws');
 ```
 
 #### After:
@@ -95,7 +95,7 @@ const ws = new TerminalWebSocketConfigured({
 #### Before:
 ```typescript
 const bridge = new BridgeClient({
-  bridgeUrl: 'http://localhost:3001/api/bridge'
+  bridgeUrl: 'http://localhost:8080/api/bridge'
 });
 ```
 
@@ -137,7 +137,7 @@ Create `.env.local`:
 ```bash
 # Service hosts
 CONSOLE_HOST=http://localhost:3000
-BRIDGE_HOST=http://localhost:3001
+BRIDGE_HOST=http://localhost:8080
 
 # Features
 ENABLE_BRIDGE_INTEGRATION=true
@@ -194,7 +194,7 @@ export default defineConfig(({ mode }) => {
       port: parseInt(env.VITE_DEV_PORT || '3000'),
       proxy: {
         '/terminal/ws': {
-          target: env.VITE_CONSOLE_WS_TARGET || 'ws://localhost:8000',
+          target: env.VITE_CONSOLE_WS_TARGET || 'ws://localhost:3001',
           ws: true,
           changeOrigin: true
         }
@@ -224,7 +224,7 @@ services:
   nexus-console:
     environment:
       - CONSOLE_HOST=${CONSOLE_HOST:-http://localhost:3000}
-      - BRIDGE_HOST=${BRIDGE_HOST:-http://localhost:3001}
+      - BRIDGE_HOST=${BRIDGE_HOST:-http://localhost:8080}
       - BRIDGE_API_KEY=${BRIDGE_API_KEY}
 ```
 

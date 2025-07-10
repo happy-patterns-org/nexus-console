@@ -31,7 +31,7 @@ This report outlines the alignment requirements between nexus-console and the sh
 **Current nexus-console**:
 ```typescript
 // Using port 8000 for console
-target: 'ws://localhost:8000'
+target: 'ws://localhost:3001'
 ```
 
 **Shared-config expects**:
@@ -47,7 +47,7 @@ BRIDGE_PORT = 8080
 **Current nexus-console**:
 ```typescript
 // Direct WebSocket connection
-'ws://localhost:8000/terminal/ws'
+'ws://localhost:3001/terminal/ws'
 ```
 
 **Shared-config provides**:
@@ -63,7 +63,7 @@ getConsolePTYUrl(sessionId: string): string
 **Current nexus-console**:
 ```typescript
 // BridgeClient.ts
-'http://localhost:3001/api/bridge'
+'http://localhost:8080/api/bridge'
 ```
 
 **Shared-config expects**:

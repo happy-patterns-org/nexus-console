@@ -58,7 +58,7 @@ The `BridgeClient` class provides:
 ```typescript
 // Optional Bridge configuration
 const bridgeConfig = {
-  bridgeUrl: 'http://localhost:3001/api/bridge',
+  bridgeUrl: 'http://localhost:8080/api/bridge',
   apiKey: 'optional-api-key',
   projectId: 'my-project',
   enableMetrics: true,
@@ -110,12 +110,12 @@ The `NexusConsoleHybrid` extends the base console:
 ```typescript
 const console = new NexusConsoleHybrid({
   // Standard console config
-  serverUrl: 'ws://localhost:8000',
+  serverUrl: 'ws://localhost:3001',
   
   // Optional Bridge config
   enableBridge: true,
   bridge: {
-    bridgeUrl: 'http://localhost:3001/api/bridge',
+    bridgeUrl: 'http://localhost:8080/api/bridge',
     enableMetrics: true,
     enableDiscovery: true
   }
@@ -133,7 +133,7 @@ The React component supports Bridge configuration:
   
   // Bridge configuration
   enableBridge={true}
-  bridgeUrl="http://localhost:3001/api/bridge"
+  bridgeUrl="http://localhost:8080/api/bridge"
   enableMetrics={true}
   enableDiscovery={true}
   
@@ -172,7 +172,7 @@ The React component supports Bridge configuration:
 ### Standalone Mode (No Bridge)
 ```typescript
 const console = new NexusConsoleHybrid({
-  serverUrl: 'ws://localhost:8000',
+  serverUrl: 'ws://localhost:3001',
   enableBridge: false
 });
 ```
@@ -180,7 +180,7 @@ const console = new NexusConsoleHybrid({
 ### Full Integration Mode
 ```typescript
 const console = new NexusConsoleHybrid({
-  serverUrl: 'ws://localhost:8000',
+  serverUrl: 'ws://localhost:3001',
   enableBridge: true,
   bridge: {
     bridgeUrl: process.env.BRIDGE_URL,
@@ -196,7 +196,7 @@ const console = new NexusConsoleHybrid({
 ### Development Mode
 ```typescript
 const console = new NexusConsoleHybrid({
-  serverUrl: 'ws://localhost:8000',
+  serverUrl: 'ws://localhost:3001',
   enableBridge: true,
   bridge: {
     // Auto-detects local Bridge

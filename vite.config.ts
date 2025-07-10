@@ -6,8 +6,8 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   
   // Define proxy targets with environment variable support
-  const CONSOLE_WS_TARGET = env.VITE_CONSOLE_WS_TARGET || env.CONSOLE_WS_TARGET || 'ws://localhost:8000';
-  const CONSOLE_API_TARGET = env.VITE_CONSOLE_API_TARGET || env.CONSOLE_API_TARGET || 'http://localhost:8000';
+  const CONSOLE_WS_TARGET = env.VITE_CONSOLE_WS_TARGET || env.CONSOLE_WS_TARGET || 'ws://localhost:3001';
+  const CONSOLE_API_TARGET = env.VITE_CONSOLE_API_TARGET || env.CONSOLE_API_TARGET || 'http://localhost:3001';
   const DEV_PORT = parseInt(env.VITE_DEV_PORT || env.DEV_PORT || '3000', 10);
   
   return {

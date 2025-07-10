@@ -132,7 +132,7 @@ npm run build
 2. **Update Imports**:
    ```typescript
    // Before
-   const ws = new WebSocket('ws://localhost:8000/terminal/ws');
+   const ws = new WebSocket('ws://localhost:3001/terminal/ws');
    
    // After
    import { TerminalWebSocketConfigured } from '@happy-devkit/nexus-console';

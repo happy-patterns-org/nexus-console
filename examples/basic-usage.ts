@@ -11,7 +11,7 @@ async function exampleWithFactory() {
     container: document.getElementById('terminal-container'),
     theme: 'nexus-dark',
     fontSize: 14,
-    wsUrl: 'ws://localhost:8080/terminal/ws',
+    wsUrl: 'ws://localhost:3001/terminal/ws',
     enableFileSystem: true,
     enableCache: true,
     securityLevel: 'standard',

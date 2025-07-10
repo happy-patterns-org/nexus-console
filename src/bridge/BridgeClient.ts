@@ -84,9 +84,9 @@ class BridgeClient {
       return `${window.location.origin}/api/bridge`;
     }
     // Use environment variable or default configuration
-    const defaultPort = process.env.BRIDGE_PORT || '3001';
+    const defaultPort = process.env.BRIDGE_PORT || '8080';
     const defaultHost = process.env.BRIDGE_HOST || 'localhost';
-    return `http://${defaultHost}:${defaultPort}/api/bridge`;
+    return `http://${defaultHost}:${defaultPort}/api`;
   }
   
   /**

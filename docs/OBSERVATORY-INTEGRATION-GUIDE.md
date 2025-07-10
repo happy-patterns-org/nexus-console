@@ -46,7 +46,7 @@ function WorkspaceConsole({ projectId, authToken }) {
       
       // Bridge configuration
       enableBridge={true}
-      bridgeUrl={process.env.BRIDGE_URL || 'http://localhost:3001/api/bridge'}
+      bridgeUrl={process.env.BRIDGE_URL || 'http://localhost:8080/api/bridge'}
       bridgeApiKey={process.env.BRIDGE_API_KEY}
       enableMetrics={true}
       enableDiscovery={true}

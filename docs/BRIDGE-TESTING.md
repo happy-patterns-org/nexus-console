@@ -29,7 +29,7 @@ describe('BridgeClient', () => {
   beforeEach(() => {
     fetchMock = jest.spyOn(global, 'fetch');
     bridge = new BridgeClient({
-      bridgeUrl: 'http://localhost:3001/api/bridge',
+      bridgeUrl: 'http://localhost:8080/api/bridge',
       enableMetrics: true,
       enableDiscovery: true
     });
@@ -257,7 +257,7 @@ describe('NexusConsoleHybrid', () => {
     console = new NexusConsoleHybrid({
       enableBridge: true,
       bridge: {
-        bridgeUrl: 'http://localhost:3001/api/bridge'
+        bridgeUrl: 'http://localhost:8080/api/bridge'
       }
     });
   });
@@ -401,7 +401,7 @@ describe('Bridge Integration', () => {
     console = new NexusConsoleHybrid({
       enableBridge: true,
       bridge: {
-        bridgeUrl: 'http://localhost:3001/api/bridge',
+        bridgeUrl: 'http://localhost:8080/api/bridge',
         enableMetrics: true,
         enableDiscovery: true,
         metricsInterval: 1000 // Fast reporting for tests
@@ -480,7 +480,7 @@ describe('NexusConsole React Component', () => {
       <NexusConsole
         projectId="test-project"
         enableBridge={true}
-        bridgeUrl="http://localhost:3001/api/bridge"
+        bridgeUrl="http://localhost:8080/api/bridge"
         onBridgeStatus={onBridgeStatus}
       />
     );
@@ -495,7 +495,7 @@ describe('NexusConsole React Component', () => {
       <NexusConsole
         projectId="test-project"
         enableBridge={true}
-        bridgeUrl="http://localhost:3001/api/bridge"
+        bridgeUrl="http://localhost:8080/api/bridge"
         onBridgeStatus={onBridgeStatus}
       />
     );

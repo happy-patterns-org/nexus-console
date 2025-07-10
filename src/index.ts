@@ -30,7 +30,8 @@ export { default as CommandSanitizer } from './security/CommandSanitizer';
 export { default as CacheManager } from './cache/CacheManager';
 
 // Bridge
-export { getBridgeClient, destroyBridgeClient } from './bridge/BridgeClient';
+export { getBridgeClient, destroyBridgeClient } from './bridge/BridgeClientEnhanced';
+export { default as BridgeClient } from './bridge/BridgeClientEnhanced';
 export { MetricsCollector } from './bridge/MetricsCollector';
 export type { BridgeConfig, TerminalEndpoint, SessionMetrics, BridgeStatus } from './bridge/BridgeClient';
 
@@ -46,8 +47,9 @@ export function createTerminal(config?: NexusConsoleConfig) {
 }
 
 // React components
-export { NexusConsole as NexusConsoleComponent, useNexusConsoleAPI } from './react/NexusConsole';
-export { NexusConsoleConfigured } from './react/NexusConsoleConfigured';
+export { NexusConsoleConfigured as NexusConsoleComponent } from './react/NexusConsoleConfigured';
+export { NexusConsole } from './react/NexusConsole';
+export { useNexusConsoleAPI } from './react/NexusConsole';
 export { VirtualScroller } from './react/VirtualScroller';
 export type { 
   NexusConsoleProps, 
