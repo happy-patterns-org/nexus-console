@@ -67,6 +67,19 @@ export { default as BridgeClient } from './bridge/BridgeClientEnhanced';
 export { MetricsCollector } from './bridge/MetricsCollector';
 export type { BridgeConfig, TerminalEndpoint, SessionMetrics, BridgeStatus } from './bridge/BridgeClient';
 
+// Performance
+export { PerformanceMonitor, performanceMonitor } from './performance/PerformanceMonitor';
+export { usePerformance, useRenderPerformance } from './hooks/usePerformance';
+export { PerformanceDashboard } from './components/PerformanceDashboard';
+export { 
+  getPerformanceConfig,
+  defaultPerformanceConfig,
+  PERFORMANCE_MARKS,
+  PERFORMANCE_MEASURES
+} from './performance/performanceConfig';
+export type { PerformanceMetrics, PerformanceBudget } from './performance/PerformanceMonitor';
+export type { PerformanceConfig } from './performance/performanceConfig';
+
 // Types
 export * from './types';
 

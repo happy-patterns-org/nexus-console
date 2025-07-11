@@ -11,6 +11,7 @@ Nexus Console is a production-ready web terminal that provides:
 - 🎨 **Modular Design**: Clean separation of concerns for easy integration
 - ⚡ **Smart Caching**: Multi-tier caching with compression for optimal performance
 - 🔄 **Multi-Session**: Concurrent PTY sessions with hot-switching capabilities
+- 📊 **Performance Monitoring**: Real-time metrics dashboard with budget enforcement
 
 ## Architecture
 
@@ -88,6 +89,8 @@ await terminal.initialize();
 - [Architecture Guide](docs/architecture.md)
 - [Security Model](docs/security.md)
 - [Integration Guide](docs/integration.md)
+- [Performance Standards](docs/PERFORMANCE_STANDARDS.md)
+- [Software Bill of Materials (SBOM)](docs/SBOM.md)
 
 ## Contributing
 

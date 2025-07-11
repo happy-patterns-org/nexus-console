@@ -29,7 +29,9 @@
     "docs": "typedoc",
     "docs:watch": "typedoc --watch",
     "docs:serve": "npx http-server docs/api -p 8080",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "sbom": "node scripts/generate-sbom.js",
+    "security:scan": "npm audit && npm run sbom"
   },
   "keywords": [
     "terminal",
@@ -52,7 +54,7 @@
   },
   "homepage": "https://github.com/happy-patterns-org/nexus-console#readme",
   "dependencies": {
-    "@business-org/shared-config-ts": "^1.0.0",
+    "@business-org/shared-config-ts": "file:../shared-config",
     "@xterm/addon-clipboard": "^0.1.0",
     "@xterm/addon-fit": "^0.10.0",
     "@xterm/addon-search": "^0.15.0",

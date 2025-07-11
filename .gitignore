@@ -80,3 +80,10 @@ sessions/
 # Terminal specific
 .terminal-cache/
 .pty-sessions/
+
+# SBOM files (generated)
+sbom/
+*.sbom.json
+*.sbom.xml
+sbom-*.json
+sbom-*.xml
