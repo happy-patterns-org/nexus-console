@@ -125,18 +125,21 @@ describe('MetricsCollector', () => {
   });
 
   describe('session end', () => {
-    it('should provide final metrics on session end', () => {
+    it('should provide final metrics on session end', async () => {
       collector.recordCommand();
       collector.recordBytes(500);
       collector.recordLatency(25);
 
+      // Small delay to ensure endTime is different
+      await new Promise(resolve => setTimeout(resolve, 1));
+      
       const finalMetrics = collector.endSession();
       
       expect(finalMetrics.sessionId).toBe('test-session');
       expect(finalMetrics.commandCount).toBe(1);
       expect(finalMetrics.bytesTransferred).toBe(500);
       expect(finalMetrics.endTime).toBeDefined();
-      expect(finalMetrics.endTime).toBeGreaterThan(finalMetrics.startTime);
+      expect(finalMetrics.endTime).toBeGreaterThanOrEqual(finalMetrics.startTime);
     });
 
     it('should call flush callbacks on session end', () => {

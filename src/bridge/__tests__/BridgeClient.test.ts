@@ -13,6 +13,9 @@ describe('BridgeClient', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     destroyBridgeClient();
+    
+    // Mock fetch to return bridge unavailable by default
+    (global.fetch as any).mockRejectedValue(new Error('Network error'));
   });
 
   afterEach(() => {
@@ -138,7 +141,13 @@ describe('BridgeClient', () => {
     });
 
     it('should not report metrics when disabled', async () => {
-      const client = getBridgeClient({ enableMetrics: false });
+      // Clear fetch mock count
+      vi.clearAllMocks();
+      
+      const client = getBridgeClient({ 
+        enableMetrics: false,
+        metricsInterval: 1000000 // Very long interval to prevent auto-flush
+      });
       
       const metrics = {
         sessionId: 'test-session',
@@ -151,15 +160,32 @@ describe('BridgeClient', () => {
 
       await client.reportMetrics(metrics);
       
-      // No fetch calls should be made
-      expect(fetch).not.toHaveBeenCalled();
+      // Wait a bit to ensure no async operations
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // Should only have the initial health check failure
+      expect(fetch).toHaveBeenCalledTimes(1);
+      expect(fetch).toHaveBeenCalledWith(
+        expect.stringContaining('/health'),
+        expect.any(Object)
+      );
     });
   });
 
   describe('callbacks', () => {
     it('should notify metrics callbacks', async () => {
+      // Mock bridge as available for this test
+      const mockResponse = {
+        ok: true,
+        json: async () => ({ version: '1.0.0', features: ['metrics'] })
+      };
+      (global.fetch as any).mockResolvedValueOnce(mockResponse);
+      
       const callback = vi.fn();
       const client = getBridgeClient({ enableMetrics: true });
+      
+      // Wait for health check to complete
+      await new Promise(resolve => setTimeout(resolve, 100));
       
       const unsubscribe = client.onMetrics(callback);
 
