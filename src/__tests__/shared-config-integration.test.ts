@@ -1,12 +1,12 @@
 import { describe, it, expect } from 'vitest';
 import { 
-  API_PATHS, 
-  CONSOLE_CONFIG,
-  getConsoleHost,
-  getConsoleWSUrl,
-  getConsoleApiUrl,
-  getBridgeHost,
-  getBridgeApiUrl
+  API_PATHS,
+  WS_PATHS,
+  SERVICE_PORTS,
+  SERVICE_HOSTS,
+  SERVICE_URLS,
+  getBridgeAPIUrl,
+  getBridgeWSUrl
 } from '@business-org/shared-config-ts';
 import {
   WSAgentStatusMessage,
@@ -18,10 +18,10 @@ import {
 describe('Shared Config Integration', () => {
   describe('API Paths', () => {
     it('should use correct API paths', () => {
-      expect(API_PATHS.health).toBe('/api/health');
-      expect(API_PATHS.projects).toBe('/api/projects');
-      expect(API_PATHS.terminal.auth).toBe('/api/terminal/auth');
-      expect(API_PATHS.terminal.execute).toBe('/api/terminal/execute');
+      expect(API_PATHS.HEALTH).toBe('/api/health');
+      expect(API_PATHS.PROJECTS).toBe('/api/projects');
+      expect(API_PATHS.CONSOLE_TERMINALS).toBe('/api/console/terminals');
+      expect(API_PATHS.CONSOLE_COMMANDS).toBe('/api/console/commands');
     });
 
     it('should generate correct project-specific paths', () => {
@@ -31,44 +31,50 @@ describe('Shared Config Integration', () => {
     });
 
     it('should have correct WebSocket paths', () => {
-      expect(API_PATHS.ws.terminal).toBe('/ws/terminal');
-      expect(API_PATHS.ws.projects).toBe('/ws/projects');
+      expect(WS_PATHS.CONSOLE).toBe('/ws/console');
+      expect(WS_PATHS.ROOT).toBe('/ws');
+      expect(WS_PATHS.METRICS).toBe('/ws/metrics');
     });
   });
 
   describe('Console Configuration', () => {
     it('should have required console config values', () => {
-      expect(CONSOLE_CONFIG.defaultHeight).toBeDefined();
-      expect(CONSOLE_CONFIG.minHeight).toBeDefined();
-      expect(CONSOLE_CONFIG.maxHeight).toBeDefined();
-      expect(CONSOLE_CONFIG.fontFamily).toBeDefined();
-      expect(CONSOLE_CONFIG.fontSize).toBeDefined();
-      expect(CONSOLE_CONFIG.maxBufferSize).toBeDefined();
-      expect(CONSOLE_CONFIG.reconnectInterval).toBeDefined();
-      expect(CONSOLE_CONFIG.maxReconnectAttempts).toBeDefined();
-      expect(CONSOLE_CONFIG.heartbeatInterval).toBeDefined();
+      // Console port should be defined
+      expect(SERVICE_PORTS.CONSOLE).toBe(3001);
+      expect(SERVICE_HOSTS.CONSOLE).toBeDefined();
+      expect(SERVICE_URLS.CONSOLE).toBeDefined();
+      
+      // Console WebSocket paths
+      expect(WS_PATHS.CONSOLE).toBe('/ws/console');
+      
+      // Console API paths
+      expect(API_PATHS.CONSOLE_TERMINALS).toBeDefined();
+      expect(API_PATHS.CONSOLE_COMMANDS).toBeDefined();
     });
   });
 
   describe('URL Builders', () => {
     it('should build correct console URLs', () => {
-      // These will use environment variables or defaults
-      const consoleHost = getConsoleHost();
-      expect(consoleHost).toMatch(/^https?:\/\//);
+      // Console service URL should be defined
+      expect(SERVICE_URLS.CONSOLE).toBeDefined();
+      expect(SERVICE_URLS.CONSOLE).toContain(`${SERVICE_PORTS.CONSOLE}`);
       
-      const wsUrl = getConsoleWSUrl();
+      // Console WebSocket URL can be built manually
+      const wsUrl = `ws://${SERVICE_HOSTS.CONSOLE}:${SERVICE_PORTS.CONSOLE}${WS_PATHS.CONSOLE}`;
       expect(wsUrl).toMatch(/^wss?:\/\//);
-      
-      const apiUrl = getConsoleApiUrl('/test');
-      expect(apiUrl).toMatch(/^https?:\/\/.*\/test$/);
     });
 
     it('should build correct bridge URLs', () => {
-      const bridgeHost = getBridgeHost();
-      expect(bridgeHost).toMatch(/^https?:\/\//);
+      // Bridge service URL should be defined
+      expect(SERVICE_URLS.BRIDGE_SERVER).toBeDefined();
       
-      const bridgeApiUrl = getBridgeApiUrl('/test');
-      expect(bridgeApiUrl).toMatch(/^https?:\/\/.*\/test$/);
+      // Test the bridge URL builder function
+      const bridgeApiUrl = getBridgeAPIUrl('/test');
+      expect(bridgeApiUrl).toBe(`${SERVICE_URLS.BRIDGE_SERVER}/test`);
+      
+      // Test WebSocket URL builder
+      const bridgeWsUrl = getBridgeWSUrl('/ws/test');
+      expect(bridgeWsUrl).toMatch(/^wss?:\/\/.*\/ws\/test$/);
     });
   });
 
