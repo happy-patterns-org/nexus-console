@@ -10,11 +10,21 @@ import type {
   TerminalEventData 
 } from '../types';
 
+// WebSocket constructor interface for injection
+export interface SocketCtor {
+  new (url: string, protocols?: string | string[]): WebSocket;
+}
+
 export interface WebSocketConfig {
   wsUrl?: string;
   reconnectInterval?: number;
   maxReconnectAttempts?: number;
   heartbeatInterval?: number;
+  /**
+   * Provide an alternate WebSocket class for tests / polyfills.
+   * Defaults to the global `WebSocket`.
+   */
+  WebSocketImpl?: SocketCtor;
 }
 
 export interface WebSocketState {
@@ -103,6 +113,7 @@ class TerminalWebSocketManager {
   private ws: WebSocket | null;
   private reconnectAttempts: number;
   private reconnectTimer?: ReturnType<typeof setTimeout>;
+  private WS: SocketCtor;
   private heartbeatTimer?: ReturnType<typeof setInterval>;
   private sessions: Map<string, TerminalSession>;
   private activeSession: string | null;
@@ -112,13 +123,24 @@ class TerminalWebSocketManager {
   private state: WebSocketState;
   private metrics: WebSocketMetrics;
 
+  private getDefaultWsUrl(): string {
+    if (typeof window !== 'undefined' && window.location) {
+      return `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/terminal/ws`;
+    }
+    return 'ws://localhost:3001/terminal/ws';
+  }
+
   constructor(config: WebSocketConfig = {}) {
     this.config = {
-      wsUrl: config.wsUrl || `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/terminal/ws`,
+      wsUrl: config.wsUrl || this.getDefaultWsUrl(),
       reconnectInterval: config.reconnectInterval || 3000,
       maxReconnectAttempts: config.maxReconnectAttempts || 10,
       heartbeatInterval: config.heartbeatInterval || 30000,
+      WebSocketImpl: config.WebSocketImpl,
     };
+
+    // Set WebSocket implementation
+    this.WS = config.WebSocketImpl ?? WebSocket;
 
     this.ws = null;
     this.reconnectAttempts = 0;
@@ -169,7 +191,7 @@ class TerminalWebSocketManager {
       const url = new URL(this.config.wsUrl);
       url.searchParams.set('token', token);
 
-      this.ws = new WebSocket(url.toString());
+      this.ws = new this.WS(url.toString());
       this.ws.binaryType = 'arraybuffer';
 
       this.setupEventHandlers();

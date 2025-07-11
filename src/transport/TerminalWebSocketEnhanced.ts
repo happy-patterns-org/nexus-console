@@ -18,9 +18,12 @@ export class TerminalWebSocketEnhanced extends TerminalWebSocketManager {
   private authEndpoint?: string;
   private useAuthHeaders: boolean;
   private tokenStorage: 'memory' | 'sessionStorage' | 'none';
+  private WS: any; // Access parent's WS implementation
   
   constructor(config: EnhancedWebSocketConfig = {}) {
     super(config);
+    // Get WebSocket implementation from parent
+    this.WS = (this as any).WS;
     this.authToken = config.authToken;
     this.authEndpoint = config.authEndpoint || '/api/auth/token';
     this.useAuthHeaders = config.useAuthHeaders ?? true;
@@ -55,25 +58,74 @@ export class TerminalWebSocketEnhanced extends TerminalWebSocketManager {
       const token = await this.getAuthToken();
       
       // Create WebSocket URL
-      const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-      const wsHost = this.config.wsUrl || `${window.location.host}/ws`;
-      const url = new URL(`${wsProtocol}//${wsHost}`);
-      
-      // Create WebSocket with auth headers (requires a custom WebSocket implementation)
-      // For standard WebSocket, we need to use a different approach
-      this.ws = new WebSocket(url.toString(), [], {
-        headers: {
-          'Authorization': `Bearer ${token}`
+      let url: URL;
+      if (this.config.wsUrl) {
+        // Use provided URL directly if it's absolute
+        if (this.config.wsUrl.startsWith('ws://') || this.config.wsUrl.startsWith('wss://')) {
+          url = new URL(this.config.wsUrl);
+        } else {
+          // Relative URL - prepend protocol and host
+          const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+          url = new URL(`${wsProtocol}//${window.location.host}${this.config.wsUrl}`);
         }
-      } as any);
+      } else {
+        // Default WebSocket URL
+        const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        url = new URL(`${wsProtocol}//${window.location.host}/ws`);
+      }
       
-      // If headers are not supported, fall back to URL parameter
-      if (!this.ws || this.ws.readyState === WebSocket.CLOSED) {
+      // Create WebSocket with auth headers
+      // Use injected WebSocket implementation if available
+      if (this.WS) {
+        // If we have an injected WebSocket, use it
+        url.searchParams.set('token', token);
+        this.ws = new this.WS(url.toString());
+      } else if (typeof require !== 'undefined') {
+        // Check if we're in Node.js environment with ws package
+        try {
+          // eslint-disable-next-line @typescript-eslint/no-var-requires
+          const WS = require('ws');
+          this.ws = new WS(url.toString(), {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+        } catch {
+          // Fallback to standard WebSocket with token in URL
+          url.searchParams.set('token', token);
+          this.ws = new WebSocket(url.toString());
+        }
+      } else {
+        // Browser environment - add token to URL
         url.searchParams.set('token', token);
         this.ws = new WebSocket(url.toString());
       }
       
       this.setupEventHandlers();
+      
+      // Wait for connection to be established
+      await new Promise<void>((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          reject(new Error('Connection timeout'));
+        }, 5000);
+        
+        const onConnected = () => {
+          clearTimeout(timeout);
+          this.off('connected', onConnected);
+          this.off('error', onError);
+          resolve();
+        };
+        
+        const onError = (error: any) => {
+          clearTimeout(timeout);
+          this.off('connected', onConnected);
+          this.off('error', onError);
+          reject(error);
+        };
+        
+        this.on('connected', onConnected);
+        this.on('error', onError);
+      });
       
     } catch (error) {
       this.state.connecting = false;
