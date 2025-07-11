@@ -1,0 +1,292 @@
+name: Security Scanning
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Run security scan daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  dependency-scan:
+    name: Dependency Security Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+      
+      - name: Run npm audit
+        run: |
+          npm audit --production --audit-level=moderate
+        continue-on-error: true
+        
+      - name: Run npm audit and save report
+        run: |
+          npm audit --json > npm-audit-report.json || true
+          npm audit --production --audit-level=moderate
+          
+      - name: Upload npm audit report
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: npm-audit-report
+          path: npm-audit-report.json
+
+  snyk-scan:
+    name: Snyk Security Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=medium --json-file-output=snyk-report.json
+        continue-on-error: true
+        
+      - name: Upload Snyk report
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: snyk-report
+          path: snyk-report.json
+
+  codeql-analysis:
+    name: CodeQL Security Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        language: ['javascript', 'typescript']
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: ${{ matrix.language }}
+          queries: security-extended,security-and-quality
+      
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v2
+      
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+        with:
+          category: "/language:${{matrix.language}}"
+
+  trivy-scan:
+    name: Trivy Security Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Run Trivy vulnerability scanner in repo mode
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH,MEDIUM'
+          
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  license-check:
+    name: License Compliance Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Install license-checker
+        run: npm install -g license-checker
+        
+      - name: Check licenses
+        run: |
+          license-checker --json --out licenses.json --onlyAllow 'MIT;Apache-2.0;BSD-2-Clause;BSD-3-Clause;ISC;CC0-1.0;CC-BY-3.0;CC-BY-4.0;Unlicense;WTFPL'
+          
+      - name: Upload license report
+        uses: actions/upload-artifact@v3
+        with:
+          name: license-report
+          path: licenses.json
+
+  docker-scan:
+    name: Docker Image Security Scan
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Build Docker image
+        run: docker build -t nexus-console:scan .
+        
+      - name: Run Trivy on Docker image
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'nexus-console:scan'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+
+  sbom-generation:
+    name: Generate SBOM
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Generate SBOM
+        run: node scripts/generate-sbom.js
+        
+      - name: Upload SBOM artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: sbom
+          path: sbom/
+          
+      - name: Generate SBOM with Syft
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
+          syft . -o cyclonedx-json > sbom/syft-cyclonedx.json
+          syft . -o spdx-json > sbom/syft-spdx.json
+          
+      - name: Scan SBOM for vulnerabilities
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b /usr/local/bin
+          grype sbom:sbom/sbom-cyclonedx.json -o json > sbom/vulnerability-scan.json || true
+          
+      - name: Upload vulnerability scan results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: sbom-vulnerability-scan
+          path: sbom/vulnerability-scan.json
+
+  security-summary:
+    name: Security Summary
+    runs-on: ubuntu-latest
+    needs: [dependency-scan, snyk-scan, codeql-analysis, trivy-scan, license-check, sbom-generation]
+    if: always()
+    
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v3
+        
+      - name: Generate security summary
+        run: |
+          echo "# Security Scan Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Scan Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Check npm audit results
+          if [ -f npm-audit-report/npm-audit-report.json ]; then
+            vulnerabilities=$(jq '.metadata.vulnerabilities' npm-audit-report/npm-audit-report.json)
+            echo "### NPM Audit" >> $GITHUB_STEP_SUMMARY
+            echo "- Total vulnerabilities: $(echo $vulnerabilities | jq '.total')" >> $GITHUB_STEP_SUMMARY
+            echo "- Critical: $(echo $vulnerabilities | jq '.critical')" >> $GITHUB_STEP_SUMMARY
+            echo "- High: $(echo $vulnerabilities | jq '.high')" >> $GITHUB_STEP_SUMMARY
+            echo "- Moderate: $(echo $vulnerabilities | jq '.moderate')" >> $GITHUB_STEP_SUMMARY
+            echo "- Low: $(echo $vulnerabilities | jq '.low')" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # Check SBOM generation
+          if [ -f sbom/sbom-summary.json ]; then
+            echo "### SBOM Generation" >> $GITHUB_STEP_SUMMARY
+            totalComponents=$(jq '.totalComponents' sbom/sbom-summary.json)
+            directDeps=$(jq '.directDependencies' sbom/sbom-summary.json)
+            devDeps=$(jq '.devDependencies' sbom/sbom-summary.json)
+            echo "- Total components: $totalComponents" >> $GITHUB_STEP_SUMMARY
+            echo "- Direct dependencies: $directDeps" >> $GITHUB_STEP_SUMMARY
+            echo "- Dev dependencies: $devDeps" >> $GITHUB_STEP_SUMMARY
+            echo "- Formats generated: CycloneDX, SPDX" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "## Next Steps" >> $GITHUB_STEP_SUMMARY
+          echo "1. Review security reports in the artifacts" >> $GITHUB_STEP_SUMMARY
+          echo "2. Fix any critical or high vulnerabilities" >> $GITHUB_STEP_SUMMARY
+          echo "3. Update dependencies regularly" >> $GITHUB_STEP_SUMMARY
+          echo "4. Review SBOM for supply chain security" >> $GITHUB_STEP_SUMMARY
+          
+      - name: Comment PR with security summary
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            
+            // Read npm audit report if exists
+            let npmAuditSummary = 'No npm audit report found';
+            try {
+              const npmAudit = JSON.parse(fs.readFileSync('npm-audit-report/npm-audit-report.json', 'utf8'));
+              const vulns = npmAudit.metadata.vulnerabilities;
+              npmAuditSummary = `NPM Audit: ${vulns.total} total (${vulns.critical} critical, ${vulns.high} high, ${vulns.moderate} moderate, ${vulns.low} low)`;
+            } catch (e) {}
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## 🔒 Security Scan Results\n\n${npmAuditSummary}\n\nFull reports available in workflow artifacts.`
+            });

@@ -217,6 +217,39 @@ Located in `src/__tests__/security/`:
 npm run test:security
 ```
 
+## Software Bill of Materials (SBOM)
+
+Nexus Console generates Software Bill of Materials (SBOM) for supply chain transparency:
+
+### SBOM Features
+
+- **Formats**: CycloneDX and SPDX industry standards
+- **Generation**: Automatic on releases and security scans
+- **Contents**: All dependencies with versions and licenses
+- **Scanning**: Integrated vulnerability scanning
+
+### Generating SBOM
+
+```bash
+# Generate SBOM in multiple formats
+npm run sbom
+
+# Run security scan with SBOM generation
+npm run security:scan
+```
+
+### Using SBOM for Security
+
+```bash
+# Scan SBOM for vulnerabilities
+grype sbom:sbom/sbom-cyclonedx.json
+
+# Check license compliance
+cyclonedx-cli analyze --input-file sbom/sbom-cyclonedx.json
+```
+
+For detailed SBOM documentation, see [SBOM Guide](docs/SBOM.md).
+
 ## Security Checklist for Contributors
 
 - [ ] All user input is sanitized

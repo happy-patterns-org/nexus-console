@@ -1,0 +1,95 @@
+name: Generate SBOM on Release
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  generate-sbom:
+    name: Generate and Attach SBOM
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Generate SBOM
+        run: npm run sbom
+        
+      - name: Generate additional SBOM formats with Syft
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
+          
+          # Generate various formats
+          syft . -o cyclonedx-json > sbom/syft-cyclonedx.json
+          syft . -o cyclonedx-xml > sbom/syft-cyclonedx.xml
+          syft . -o spdx-json > sbom/syft-spdx.json
+          syft . -o spdx-tag-value > sbom/syft-spdx.spdx
+          
+      - name: Create SBOM archive
+        run: |
+          tar -czf sbom.tar.gz sbom/
+          zip -r sbom.zip sbom/
+          
+      - name: Generate SBOM attestation
+        if: github.event_name == 'release'
+        uses: actions/attest-sbom@v1
+        with:
+          subject-path: './dist'
+          sbom-path: './sbom/sbom-cyclonedx.json'
+          push-to-registry: true
+          
+      - name: Upload SBOM to release
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            sbom.tar.gz
+            sbom.zip
+            sbom/sbom-cyclonedx.json
+            sbom/sbom-cyclonedx.xml
+            sbom/sbom-spdx.json
+            sbom/sbom-summary.json
+            
+      - name: Upload SBOM artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: sbom-${{ github.sha }}
+          path: sbom/
+          retention-days: 90
+          
+      - name: Comment on release
+        if: github.event_name == 'release'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const summary = require('./sbom/sbom-summary.json');
+            
+            github.rest.repos.createReleaseAsset({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: context.payload.release.id,
+              name: 'SBOM-README.txt',
+              data: Buffer.from(`Software Bill of Materials (SBOM) for ${context.payload.release.name}
+            
+Generated: ${summary.generated}
+Formats: ${summary.format.join(', ')}
+Total Components: ${summary.totalComponents}
+Direct Dependencies: ${summary.directDependencies}
+Dev Dependencies: ${summary.devDependencies}
+
+Files included:
+${summary.files.map(f => `- ${f}`).join('\n')}
+
+For supply chain security verification, use the CycloneDX or SPDX formatted files.
+`).toString('base64')
+            });
